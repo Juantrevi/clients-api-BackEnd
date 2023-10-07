@@ -13,6 +13,7 @@ public class Client implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
+    @Column(name = "last_name")
     private String lastName;
     private String email;
     @Column(name = "created_at")
@@ -22,8 +23,7 @@ public class Client implements Serializable {
     public Client() {
     }
 
-    public Client(Long id, String name, String lastName, String email, Date createdAt) {
-        this.id = id;
+    public Client(String name, String lastName, String email, Date createdAt) {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
