@@ -14,9 +14,25 @@ public class ClientService implements IClientService{
     @Autowired
     private IClientRepository clientRepository;
 
-    @Override
     @Transactional(readOnly = true)
     public List<Client> findAll() {
         return clientRepository.findAll();
     }
+
+    @Transactional(readOnly = true)
+    public Client findById(Long id) {
+        return clientRepository.findById(id).orElse(null);
+    }
+
+    @Transactional
+    public Client save(Client client) {
+        return clientRepository.save(client);
+    }
+
+    @Transactional
+    public void delete(Long id) {
+        clientRepository.deleteById(id);
+    }
+
+
 }
