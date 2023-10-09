@@ -3,11 +3,12 @@ package com.treviratech.clientsapibackend.controllers;
 import com.treviratech.clientsapibackend.models.entity.Client;
 import com.treviratech.clientsapibackend.models.services.IClientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 
 @CrossOrigin(origins = {"http://localhost:4200"})//Giving access to Angular app in port 4200 to this API
@@ -24,8 +25,25 @@ public class ClientRestController {
     }
 
     @GetMapping("/clients/{id}")
-    public Client show(@PathVariable Long id) {
-        return clientService.findById(id);
+    public ResponseEntity<?> show(@PathVariable Long id) {
+        Client client = null;
+        Map<String, Object> response = new HashMap<>();
+        try {
+            client = clientService.findById(id);
+        }catch (DataAccessException e){
+            response.put("message", "Error querying database" );
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+
+        if (client == null) {
+            response.put("error", "Not Found");
+            response.put("message", "Client ID: ".concat(id.toString()).concat(" does not exist"));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+        }
+
+        return new ResponseEntity<Client>(client, HttpStatus.OK);
     }
 
     @PostMapping("/clients")
