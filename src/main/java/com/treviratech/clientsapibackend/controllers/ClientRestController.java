@@ -47,9 +47,19 @@ public class ClientRestController {
     }
 
     @PostMapping("/clients")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Client create(@RequestBody Client client) {
-        return clientService.save(client);
+    public ResponseEntity<?> create(@RequestBody Client client) {
+        Client savedClient = null;
+        Map<String, Object> response = new HashMap<>();
+        try{
+            savedClient = clientService.save(client);
+        }catch (DataAccessException e){
+            response.put("message", "Error trying to insert into the DB" );
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        response.put("message", "Client created successfully");
+        response.put("client", savedClient);
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
     @DeleteMapping("/clients/{id}")
@@ -59,13 +69,35 @@ public class ClientRestController {
     }
 
     @PutMapping("/clients/{id}")
-    @ResponseStatus(HttpStatus.CREATED)
-    public Client update(@RequestBody Client client, @PathVariable Long id) {
+    public ResponseEntity<?> update(@RequestBody Client client, @PathVariable Long id) {
+
+        Map<String, Object> response = new HashMap<>();
         Client currentClient = clientService.findById(id);
-        currentClient.setName(client.getName());
-        currentClient.setLastName(client.getLastName());
-        currentClient.setEmail(client.getEmail());
-        return clientService.save(currentClient);
+
+        if (currentClient == null) {
+            response.put("error", "Not Found");
+            response.put("message", "Client ID: ".concat(id.toString()).concat(" does not exist"));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+        }
+
+        try {
+            currentClient.setName(client.getName());
+            currentClient.setLastName(client.getLastName());
+            currentClient.setEmail(client.getEmail());
+            clientService.save(currentClient);
+            response.put("message", "Client updated successfully");
+            response.put("client", currentClient);
+
+        }catch (DataAccessException e){
+
+            response.put("message", "Error trying to update the client into the DB" );
+            response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+
+        }
+
+
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
 }

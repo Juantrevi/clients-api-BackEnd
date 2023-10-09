@@ -1,6 +1,8 @@
 package com.treviratech.clientsapibackend.models.entity;
 
 import jakarta.persistence.*;
+import org.antlr.v4.runtime.misc.NotNull;
+import org.springframework.lang.NonNull;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -12,9 +14,11 @@ public class Client implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(nullable = false)
     private String name;
     @Column(name = "last_name")
     private String lastName;
+    @Column(nullable = false, unique = true)
     private String email;
     @Column(name = "created_at")
     @Temporal(TemporalType.DATE)
