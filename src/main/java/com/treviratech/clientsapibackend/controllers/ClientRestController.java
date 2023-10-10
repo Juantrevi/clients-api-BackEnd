@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
@@ -20,10 +21,20 @@ public class ClientRestController {
     @Autowired
     private IClientService clientService;
 
+    //The object BindingResult must be placed right after the object to be validated and it allows us
+    //to know if there was any problem in the validation process
     @PostMapping("/clients")
-    public ResponseEntity<?> create(@RequestBody @Valid Client client) {
+    public ResponseEntity<?> create(@RequestBody @Valid Client client, BindingResult result) {
         Client savedClient = null;
         Map<String, Object> response = new HashMap<>();
+
+        if (result.hasErrors()){
+            List<String> errors = new ArrayList<>();
+            result.getFieldErrors().forEach(err -> errors.add("The field '" + err.getField() + "' " + err.getDefaultMessage()));
+            response.put("errors", errors);
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+        }
+
         try{
             savedClient = clientService.save(client);
             response.put("message", "Client created successfully");
@@ -65,11 +76,17 @@ public class ClientRestController {
     }
 
     @PutMapping("/clients/{id}")
-    public ResponseEntity<?> update(@RequestBody Client client, @PathVariable Long id) {
+    public ResponseEntity<?> update(@RequestBody @Valid Client client, BindingResult result, @PathVariable Long id) {
 
         Map<String, Object> response = new HashMap<>();
         Client currentClient = clientService.findById(id);
 
+        if (result.hasErrors()){
+            List<String> errors = new ArrayList<>();
+            result.getFieldErrors().forEach(err -> errors.add("The field '" + err.getField() + "' " + err.getDefaultMessage()));
+            response.put("errors", errors);
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
+        }
         if (currentClient == null) {
             response.put("error", "Not Found");
             response.put("message", "Client ID: ".concat(id.toString()).concat(" does not exist"));

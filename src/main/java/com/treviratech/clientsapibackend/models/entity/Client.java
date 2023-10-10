@@ -1,8 +1,10 @@
 package com.treviratech.clientsapibackend.models.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 
@@ -16,12 +18,17 @@ public class Client implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
-    @Size(min = 2 , message = "The size must be greater than 2")
+    @Size(min = 2, max = 12, message = "The size must be greater than 2 and smaller than 12")
+    @NotEmpty(message = "The name field must not be empty")
+    @NotNull(message = "The name field must not be null")
     private String name;
     @Column(name = "last_name")
+    @NotEmpty(message = "The last name field must not be empty")
+    @NotNull(message = "The last name field must not be null")
+    @Size(min = 2, max = 12, message = "The size must be greater than 2 and smaller than 12")
     private String lastName;
     @Column(nullable = false, unique = true)
+    @Email(message = "The email field must be a valid email")
     private String email;
     @Column(name = "created_at")
     @Temporal(TemporalType.DATE)
