@@ -1,7 +1,9 @@
 package com.treviratech.clientsapibackend.models.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Size;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.lang.NonNull;
 
 import java.io.Serializable;
@@ -15,6 +17,7 @@ public class Client implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Column(nullable = false)
+    @Size(min = 2 , message = "The size must be greater than 2")
     private String name;
     @Column(name = "last_name")
     private String lastName;

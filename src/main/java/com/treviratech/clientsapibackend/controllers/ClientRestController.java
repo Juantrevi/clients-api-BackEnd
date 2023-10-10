@@ -2,6 +2,7 @@ package com.treviratech.clientsapibackend.controllers;
 
 import com.treviratech.clientsapibackend.models.entity.Client;
 import com.treviratech.clientsapibackend.models.services.IClientService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
@@ -20,18 +21,19 @@ public class ClientRestController {
     private IClientService clientService;
 
     @PostMapping("/clients")
-    public ResponseEntity<?> create(@RequestBody Client client) {
+    public ResponseEntity<?> create(@RequestBody @Valid Client client) {
         Client savedClient = null;
         Map<String, Object> response = new HashMap<>();
         try{
             savedClient = clientService.save(client);
+            response.put("message", "Client created successfully");
+            response.put("client", savedClient);
         }catch (DataAccessException e){
             response.put("message", "Error trying to insert into the DB" );
             response.put("error", e.getMessage().concat(": ").concat(e.getMostSpecificCause().getMessage()));
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        response.put("message", "Client created successfully");
-        response.put("client", savedClient);
+
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
