@@ -30,7 +30,7 @@ public class ClientRestController {
 
         if (result.hasErrors()){
             List<String> errors = new ArrayList<>();
-            result.getFieldErrors().forEach(err -> errors.add("The field '" + err.getField() + "' " + err.getDefaultMessage()));
+            result.getFieldErrors().forEach(err -> errors.add(err.getDefaultMessage()));
             response.put("errors", errors);
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
@@ -83,8 +83,9 @@ public class ClientRestController {
 
         if (result.hasErrors()){
             List<String> errors = new ArrayList<>();
-            result.getFieldErrors().forEach(err -> errors.add("The field '" + err.getField() + "' " + err.getDefaultMessage()));
+            result.getFieldErrors().forEach(err -> errors.add(err.getDefaultMessage()));
             response.put("errors", errors);
+            System.out.println("errors: " + errors);
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.BAD_REQUEST);
         }
         if (currentClient == null) {

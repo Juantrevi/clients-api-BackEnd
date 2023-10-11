@@ -18,16 +18,15 @@ public class Client implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Size(min = 2, max = 12, message = "The size must be greater than 2 and smaller than 12")
+    @Size(min = 2, max = 12, message = "The name must be greater than 2 letters and smaller than 12")
     @NotEmpty(message = "The name field must not be empty")
-    @NotNull(message = "The name field must not be null")
     private String name;
     @Column(name = "last_name")
     @NotEmpty(message = "The last name field must not be empty")
-    @NotNull(message = "The last name field must not be null")
-    @Size(min = 2, max = 12, message = "The size must be greater than 2 and smaller than 12")
+    @Size(min = 2, max = 12, message = "The last name must be greater than 2 and smaller than 12")
     private String lastName;
     @Column(nullable = false, unique = true)
+    @NotEmpty(message = "The email field must not be empty")
     @Email(message = "The email field must be a valid email")
     private String email;
     @Column(name = "created_at")
