@@ -3,6 +3,8 @@ package com.treviratech.clientsapibackend.models.services;
 import com.treviratech.clientsapibackend.models.entity.Client;
 import com.treviratech.clientsapibackend.models.repository.IClientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +19,12 @@ public class ClientService implements IClientService{
     @Transactional(readOnly = true)
     public List<Client> findAll() {
         return clientRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Client> findAll(Pageable pageable) {
+        return clientRepository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
