@@ -14,6 +14,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -143,6 +144,14 @@ public class ClientRestController {
             return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
         }
         try {
+            String oldFileName = client.getPhoto();
+            if (oldFileName != null && !oldFileName.isEmpty()){
+                Path oldFile = Paths.get("uploads").resolve(oldFileName).toAbsolutePath();
+                File oldFileInServer = oldFile.toFile();
+                if (oldFileInServer.exists() && oldFileInServer.canRead()){
+                    oldFileInServer.delete();
+                }
+            }
             clientService.delete(id);
             response.put("message", "Client deleted successfully");
 
@@ -178,6 +187,15 @@ public class ClientRestController {
                 response.put("message", "Error trying to upload the image " + file.getOriginalFilename() + " to the server" );
                 response.put("error", e.getMessage().concat(": ").concat(e.getCause().getMessage()));
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+
+            String oldFileName = client.getPhoto();
+            if (oldFileName != null && !oldFileName.isEmpty()){
+                Path oldFile = Paths.get(path).resolve(oldFileName).toAbsolutePath();
+                File oldFileInServer = oldFile.toFile();
+                if (oldFileInServer.exists() && oldFileInServer.canRead()){
+                    oldFileInServer.delete();
+                }
             }
             client.setPhoto(fileName);
             clientService.save(client);
