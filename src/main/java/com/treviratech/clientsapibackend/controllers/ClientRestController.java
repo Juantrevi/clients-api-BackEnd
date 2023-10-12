@@ -4,10 +4,13 @@ import com.treviratech.clientsapibackend.models.entity.Client;
 import com.treviratech.clientsapibackend.models.services.IClientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -16,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -164,6 +168,7 @@ public class ClientRestController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }
 
+    //Upload user's image
     @PostMapping("/clients/upload")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, @RequestParam("id") Long id){
 
@@ -204,6 +209,28 @@ public class ClientRestController {
         }
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
+    }
+
+    //Download the image
+    @GetMapping("/uploads/img/{fileName:.+}")
+    public ResponseEntity<Resource> seePhoto(@PathVariable String fileName){
+
+        Path path = Paths.get("uploads").resolve(fileName).toAbsolutePath();
+        Resource resource = null;
+        try {
+            resource = new UrlResource(path.toUri());
+        }catch (MalformedURLException e){
+            e.printStackTrace();
+        }
+
+        if (!resource.exists() && !resource.isReadable()){
+            throw new RuntimeException("Error trying to load the image: " + path.toString());
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
+
+        return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
     }
 
 }
