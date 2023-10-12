@@ -5,8 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.lang.NonNull;
+
 
 import java.io.Serializable;
 import java.util.Date;
@@ -29,22 +28,21 @@ public class Client implements Serializable {
     @NotEmpty(message = "The email field must not be empty")
     @Email(message = "The email field must be a valid email")
     private String email;
+    @NotNull(message = "The created at field must not be empty")
     @Column(name = "created_at")
     @Temporal(TemporalType.DATE)
     private Date createdAt;
 
-    @PrePersist
-    public void prePersist() {
-        createdAt = new Date();
-    }
+    private String photo;
     public Client() {
     }
 
-    public Client(String name, String lastName, String email, Date createdAt) {
+    public Client(String name, String lastName, String email, Date createdAt, String photo) {
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.createdAt = createdAt;
+        this.photo = photo;
     }
 
     public Long getId() {
@@ -85,6 +83,14 @@ public class Client implements Serializable {
 
     public void setCreatedAt(Date createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     private static final long serialVersionUID = 1L;

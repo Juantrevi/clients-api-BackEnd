@@ -12,7 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 
 
@@ -110,6 +115,7 @@ public class ClientRestController {
             currentClient.setName(client.getName());
             currentClient.setLastName(client.getLastName());
             currentClient.setEmail(client.getEmail());
+            currentClient.setCreatedAt(client.getCreatedAt());
             clientService.save(currentClient);
             response.put("message", "Client updated successfully");
             response.put("client", currentClient);
@@ -147,6 +153,39 @@ public class ClientRestController {
         }
 
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
+    }
+
+    @PostMapping("/clients/upload")
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, @RequestParam("id") Long id){
+
+        Map<String, Object> response = new HashMap<>();
+        Client client = clientService.findById(id);
+
+        if (client == null) {
+            response.put("error", "Not Found");
+            response.put("message", "Client ID: ".concat(id.toString()).concat(" does not exist"));
+            return new ResponseEntity<Map<String, Object>>(response, HttpStatus.NOT_FOUND);
+        }
+
+        if (!file.isEmpty()){
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename().replace(" ", "");
+            String path = "uploads";
+            Path savePath = Paths.get(path).resolve(fileName).toAbsolutePath();
+            //log.info(path.toString());
+            try {
+                Files.copy(file.getInputStream(), savePath);
+            } catch (IOException e) {
+                response.put("message", "Error trying to upload the image " + file.getOriginalFilename() + " to the server" );
+                response.put("error", e.getMessage().concat(": ").concat(e.getCause().getMessage()));
+                return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+            client.setPhoto(fileName);
+            clientService.save(client);
+            response.put("client", client);
+            response.put("message", "You have uploaded the image successfully: " + file.getOriginalFilename());
+        }
+
+        return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
 }
