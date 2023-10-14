@@ -2,6 +2,7 @@ package com.treviratech.clientsapibackend.controllers;
 
 import com.treviratech.clientsapibackend.models.entity.Client;
 import com.treviratech.clientsapibackend.models.services.IClientService;
+import com.treviratech.clientsapibackend.models.services.IUploadFileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -33,6 +34,9 @@ public class ClientRestController {
 
     @Autowired
     private IClientService clientService;
+
+    @Autowired
+    private IUploadFileService uploadFileService;
 
     //The object BindingResult must be placed right after the object to be validated and it allows us
     //to know if there was any problem in the validation process
@@ -149,13 +153,7 @@ public class ClientRestController {
         }
         try {
             String oldFileName = client.getPhoto();
-            if (oldFileName != null && !oldFileName.isEmpty()){
-                Path oldFile = Paths.get("uploads").resolve(oldFileName).toAbsolutePath();
-                File oldFileInServer = oldFile.toFile();
-                if (oldFileInServer.exists() && oldFileInServer.canRead()){
-                    oldFileInServer.delete();
-                }
-            }
+            uploadFileService.delete(oldFileName);
             clientService.delete(id);
             response.put("message", "Client deleted successfully");
 
@@ -182,26 +180,20 @@ public class ClientRestController {
         }
 
         if (!file.isEmpty()){
-            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename().replace(" ", "");
-            String path = "uploads";
-            Path savePath = Paths.get(path).resolve(fileName).toAbsolutePath();
-            //log.info(path.toString());
+            String fileName = null;
+
             try {
-                Files.copy(file.getInputStream(), savePath);
+                fileName = uploadFileService.copy(file);
             } catch (IOException e) {
-                response.put("message", "Error trying to upload the image " + file.getOriginalFilename() + " to the server" );
+                response.put("message", "Error trying to upload the image to the server" );
                 response.put("error", e.getMessage().concat(": ").concat(e.getCause().getMessage()));
                 return new ResponseEntity<Map<String, Object>>(response, HttpStatus.INTERNAL_SERVER_ERROR);
             }
 
             String oldFileName = client.getPhoto();
-            if (oldFileName != null && !oldFileName.isEmpty()){
-                Path oldFile = Paths.get(path).resolve(oldFileName).toAbsolutePath();
-                File oldFileInServer = oldFile.toFile();
-                if (oldFileInServer.exists() && oldFileInServer.canRead()){
-                    oldFileInServer.delete();
-                }
-            }
+
+            uploadFileService.delete(oldFileName);
+
             client.setPhoto(fileName);
             clientService.save(client);
             response.put("client", client);
@@ -215,24 +207,12 @@ public class ClientRestController {
     @GetMapping("/uploads/img/{fileName:.+}")
     public ResponseEntity<Resource> seePhoto(@PathVariable String fileName){
 
-        Path path = Paths.get("uploads").resolve(fileName).toAbsolutePath();
         Resource resource = null;
+
         try {
-            resource = new UrlResource(path.toUri());
-        }catch (MalformedURLException e){
+            resource = uploadFileService.upload(fileName);
+        } catch (MalformedURLException e) {
             e.printStackTrace();
-        }
-
-        if (!resource.exists() && !resource.isReadable()){
-            path = Paths.get("src/main/resources/static/images").resolve("no_user.png").toAbsolutePath();
-
-            try {
-                resource = new UrlResource(path.toUri());
-            }catch (MalformedURLException e){
-                e.printStackTrace();
-            }
-
-//            throw new RuntimeException("Error trying to load the image: " + path.toString());
         }
 
         HttpHeaders headers = new HttpHeaders();
