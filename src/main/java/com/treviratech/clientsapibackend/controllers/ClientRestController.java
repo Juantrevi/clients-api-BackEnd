@@ -224,7 +224,15 @@ public class ClientRestController {
         }
 
         if (!resource.exists() && !resource.isReadable()){
-            throw new RuntimeException("Error trying to load the image: " + path.toString());
+            path = Paths.get("src/main/resources/static/images").resolve("no_user.png").toAbsolutePath();
+
+            try {
+                resource = new UrlResource(path.toUri());
+            }catch (MalformedURLException e){
+                e.printStackTrace();
+            }
+
+//            throw new RuntimeException("Error trying to load the image: " + path.toString());
         }
 
         HttpHeaders headers = new HttpHeaders();
