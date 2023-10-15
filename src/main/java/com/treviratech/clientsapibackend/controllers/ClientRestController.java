@@ -60,7 +60,6 @@ public class ClientRestController {
         }
 
         try{
-//            client.setRegion(regionService.findRegionById(client.getRegion().getId()));
             savedClient = clientService.save(client);
             response.put("message", "Client created successfully");
             response.put("client", savedClient);
@@ -114,6 +113,7 @@ public class ClientRestController {
 
         Map<String, Object> response = new HashMap<>();
         Client currentClient = clientService.findById(id);
+        Region currentRegion = regionService.findRegionById(client.getRegion().getId());
 
         if (result.hasErrors()){
             List<String> errors = new ArrayList<>();
@@ -133,7 +133,7 @@ public class ClientRestController {
             currentClient.setLastName(client.getLastName());
             currentClient.setEmail(client.getEmail());
             currentClient.setCreatedAt(client.getCreatedAt());
-//            currentClient.setRegion(regionService.findRegionById(client.getRegion().getId()));
+            currentClient.setRegion(currentRegion);
             clientService.save(currentClient);
             response.put("message", "Client updated successfully");
             response.put("client", currentClient);
