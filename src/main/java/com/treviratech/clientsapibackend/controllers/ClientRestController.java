@@ -1,7 +1,9 @@
 package com.treviratech.clientsapibackend.controllers;
 
 import com.treviratech.clientsapibackend.models.entity.Client;
+import com.treviratech.clientsapibackend.models.entity.Region;
 import com.treviratech.clientsapibackend.models.services.IClientService;
+import com.treviratech.clientsapibackend.models.services.IRegionService;
 import com.treviratech.clientsapibackend.models.services.IUploadFileService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,9 @@ public class ClientRestController {
 
     @Autowired
     private IUploadFileService uploadFileService;
+
+    @Autowired
+    private IRegionService regionService;
 
     //The object BindingResult must be placed right after the object to be validated and it allows us
     //to know if there was any problem in the validation process
@@ -125,6 +130,7 @@ public class ClientRestController {
             currentClient.setLastName(client.getLastName());
             currentClient.setEmail(client.getEmail());
             currentClient.setCreatedAt(client.getCreatedAt());
+            currentClient.setRegion(client.getRegion());
             clientService.save(currentClient);
             response.put("message", "Client updated successfully");
             response.put("client", currentClient);
@@ -221,6 +227,10 @@ public class ClientRestController {
         return new ResponseEntity<Resource>(resource, headers, HttpStatus.OK);
     }
 
+    @GetMapping("/clients/regions")
+    public List<Region> listRegions(){
+        return regionService.findAllRegions();
+    }
 }
 
 
