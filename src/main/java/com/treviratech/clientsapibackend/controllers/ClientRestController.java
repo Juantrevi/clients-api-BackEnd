@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,6 +34,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/api") // This is optional
 public class ClientRestController {
+
 
     @Autowired
     private IClientService clientService;
@@ -58,6 +60,7 @@ public class ClientRestController {
         }
 
         try{
+//            client.setRegion(regionService.findRegionById(client.getRegion().getId()));
             savedClient = clientService.save(client);
             response.put("message", "Client created successfully");
             response.put("client", savedClient);
@@ -130,7 +133,7 @@ public class ClientRestController {
             currentClient.setLastName(client.getLastName());
             currentClient.setEmail(client.getEmail());
             currentClient.setCreatedAt(client.getCreatedAt());
-            currentClient.setRegion(client.getRegion());
+//            currentClient.setRegion(regionService.findRegionById(client.getRegion().getId()));
             clientService.save(currentClient);
             response.put("message", "Client updated successfully");
             response.put("client", currentClient);

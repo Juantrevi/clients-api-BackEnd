@@ -1,5 +1,6 @@
 package com.treviratech.clientsapibackend.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -41,17 +42,19 @@ public class Client implements Serializable {
     //With fetch.Lazy it is generated a proxy to the region and some additional attributes, thats why we want to exclude
     // them from the JSON response
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-    @NotNull(message = "The region field must not be empty")
+//    @NotNull(message = "The region field must not be empty")
     private Region region;
     public Client() {
     }
 
-    public Client(String name, String lastName, String email, Date createdAt, String photo) {
+    public Client(Long id, String name, String lastName, String email, Date createdAt, String photo) {
+        this.id = id;
         this.name = name;
         this.lastName = lastName;
         this.email = email;
         this.createdAt = createdAt;
         this.photo = photo;
+
     }
 
     public Long getId() {

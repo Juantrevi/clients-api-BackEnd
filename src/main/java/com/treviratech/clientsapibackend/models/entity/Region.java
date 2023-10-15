@@ -1,5 +1,6 @@
 package com.treviratech.clientsapibackend.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -8,14 +9,12 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "regions")
-public class Region implements Serializable {
+public class Region implements Serializable{
 
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @JsonIgnore
     private Long id;
-
     @NotNull
     private String name;
 

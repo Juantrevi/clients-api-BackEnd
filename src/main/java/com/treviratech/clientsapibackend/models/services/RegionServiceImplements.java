@@ -19,4 +19,12 @@ public class RegionServiceImplements implements IRegionService{
     public List<Region> findAllRegions() {
         return regionRepository.findAll();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Region findRegionById(Long id) {
+        return regionRepository.findById(id).orElse(null);
+    }
+
+
 }
