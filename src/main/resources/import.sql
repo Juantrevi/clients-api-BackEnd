@@ -9,6 +9,9 @@ insert into regions (id, name) values (6, 'Oceania');
 insert into regions (id, name) values (7, 'Antarctica');
 insert into regions (id, name) values (8, 'Central America');
 
+insert into roles (id, name) values (1, 'ROLE_ADMIN');
+insert into roles (id, name) values (2, 'ROLE_USER');
+
 
 INSERT INTO clients (region_id, name, last_name, email, created_at) VALUES (1, 'Sue', 'Alfa', 'sue4@gmail.com', '2018-05-01');
 INSERT INTO clients (region_id, name, last_name, email, created_at) VALUES (4, 'John', 'Doe', 'john.doe@example.com', '2019-02-15');
@@ -45,3 +48,4 @@ INSERT INTO clients (region_id, name, last_name, email, created_at) VALUES (5, '
 INSERT INTO clients (region_id, name, last_name, email, created_at) VALUES (5, 'Cynthia', 'Murphy', 'cynthia.murphy@mail.com', '2018-10-20');
 INSERT INTO clients (region_id, name, last_name, email, created_at) VALUES (5, 'Ronald', 'Rogers', 'ronald.rogers@website.org', '2016-04-04');
 INSERT INTO clients (region_id, name, last_name, email, created_at) VALUES (5, 'Betty', 'Hill', 'betty.hill@example.net', '2019-01-28');
+

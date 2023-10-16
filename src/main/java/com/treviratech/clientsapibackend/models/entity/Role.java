@@ -1,7 +1,5 @@
 package com.treviratech.clientsapibackend.models.entity;
 
-
-
 import jakarta.persistence.*;
 
 import java.io.Serializable;

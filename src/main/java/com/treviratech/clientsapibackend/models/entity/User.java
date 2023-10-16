@@ -22,7 +22,15 @@ public class User implements Serializable {
     private Boolean enabled;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(name = "users_roles",
+            // Nombre de la tabla intermedia
+            joinColumns = @JoinColumn(name = "user_id"),
+            // Nombre de la columna que hace referencia a la tabla actual
+            inverseJoinColumns = @JoinColumn(name = "role_id"),
+            // Nombre de la columna que hace referencia a la tabla con la que se relaciona
+            uniqueConstraints = {@UniqueConstraint(columnNames = {"user_id", "role_id"})})
     private List<Role> roles;
+
 
     public Long getId() {
         return id;
